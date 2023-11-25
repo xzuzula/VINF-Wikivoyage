@@ -1,0 +1,4 @@
+data*
+**/spark_output*
+**/__pycache__
+enwiki*
