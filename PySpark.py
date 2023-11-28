@@ -8,18 +8,35 @@ infobox_regex = r"\n\|(.*?)=(.*)"
 dump_file = "E:\\VINF_data\\enwiki-20230820-pages-articles-multistream.xml"
 
 def load_gazetteer(path="src_code/gazetteer.txt") -> list[str]:
+	"""
+	Loads a list of entities from a specified text file.
+
+	This function reads a text file line by line and appends each stripped line to a list, which it then returns. It is primarily used for loading a list of entities, such as names or keywords, from a file.
+
+	Parameters:
+	path (str): The file path to read the entities from. Defaults to "src_code/gazetteer.txt".
+
+	Returns:
+	list[str]: A list of entities read from the file.
+	"""
 	entities = []
 	with open(path, "r", encoding='utf-8') as txt_file:
 		for line in txt_file:
 			entities.append(line.strip())
 	return entities
 
-def map_many(iterable, function, *other):
-    if other:
-        return map_many(map(function, iterable), *other)
-    return map(function, iterable)
-
 def clean_text(data: list[str]) -> list[str]:
+	"""
+    Cleans a list of text strings by stripping and removing unwanted characters.
+
+    This function takes a list of text strings and performs several cleaning operations. It strips whitespace, removes special characters and HTML tags, and replaces multiple spaces with a single space.
+
+    Parameters:
+    data (list[str]): A list of strings to be cleaned.
+
+    Returns:
+    list[str]: The cleaned list of strings.
+    """
 	new_data = []
 	for item in data:
 		new_text = item.strip()
@@ -30,30 +47,38 @@ def clean_text(data: list[str]) -> list[str]:
 	return new_data
 
 def create_session() -> SparkSession:
-	spark_sess = SparkSession.builder.appName("regex_example").getOrCreate()
+	"""
+    Creates and returns a new SparkSession.
+
+    This function initializes and returns a SparkSession with a specified application name. It is intended for use in a Spark application for processing large datasets.
+
+    Returns:
+    SparkSession: A newly created SparkSession.
+    """
+	spark_sess = SparkSession.builder.appName("regex_wiki").getOrCreate()
 	return spark_sess
 
-# Inicializácia Spark Session
+# Load gazetteer and init spark
 gazetteer = load_gazetteer()
 spark = create_session()
 clean_data = udf(clean_text, ArrayType(StringType()))
 
-# Načítanie textového súboru
+# Load XML file
 df = spark.read.format("com.databricks.spark.xml").options(rootTag="mediawiki", rowTag="page", encoding="ISO-8859-1").load(dump_file)
 df = df.filter(col("title").isin(gazetteer))
 
-# Extrahovanie dátumu z každého riadku
+# Extract infobox keys and values
 extracted_df = df.withColumns({"reg_key": regexp_extract_all('revision.text._VALUE', lit(infobox_regex), 1),
 							   "reg_value": regexp_extract_all('revision.text._VALUE', lit(infobox_regex), 2)})
 
-# Zobrazenie výsledkov
+# Filter results
 ne_df = extracted_df.filter(size(col("reg_key")) > 0)
 mod_df = ne_df.withColumns({"mod_key": clean_data(ne_df.reg_key),
 							"mod_val": clean_data(ne_df.reg_value)})
-# all_keys = [{row["title"]: dict(zip(list(map(str.strip, row["reg_key"])), list(map_many(row["reg_value"], str.strip, clean_text))))} for row in row_keys]
 final_data = mod_df.select("title", "mod_key", "mod_val")
 
+# Write results to file
 final_data.write.mode("overwrite").json("spark_output")
 
-# Ukončenie Spark Session
+# End spark session
 spark.stop()

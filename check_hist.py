@@ -1,6 +1,25 @@
 import json, os, hashlib
 import urllib.parse
 
+"""
+Processes scraped URLs and updates their status based on whether they have already been visited.
+
+This code reads a JSON file containing previously scraped URLs, categorizes them into 'wikivoyage' and 'other' URLs, and checks each URL against a list of files in a directory to determine if they have been visited.
+URLs that have not been visited are added to new dictionaries, while visited URLs are marked accordingly in the 'visited' category.
+
+The processed URLs are then written back to a new JSON file with updated information.
+
+The code updates the JSON file with the current status of each URL.
+
+Note:
+- URL encoding is performed to handle special characters.
+- MD5 hashing is used to generate a unique identifier for each URL.
+
+File operations:
+- Reads from 'history/link_queue_cl.json'.
+- Writes to 'history/link_queue_chck.json'.
+"""
+
 scraped_urls = None
 new_wikivoyage_urls = {}
 new_other_urls = {}

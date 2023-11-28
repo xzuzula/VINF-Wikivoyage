@@ -5,8 +5,9 @@ from org.apache.lucene import analysis, document, index, queryparser, search, st
 
 assert lucene.getVMEnv() or lucene.initVM()
 
+# Lucene setup
 analyzer = analysis.standard.StandardAnalyzer()
-directory = store.FSDirectory.open(File('dataIndex_2').toPath())
+directory = store.FSDirectory.open(File('dataIndex').toPath())
 
 ireader = index.DirectoryReader.open(directory)
 isearcher = search.IndexSearcher(ireader)
@@ -15,6 +16,7 @@ parser = queryparser.classic.QueryParser("title", analyzer)
 # query_str = 'categories:Central Europe AND link:https\:\/\/en.*'
 # query_str = 'title:slovakia AND link:https\:\/\/en.*'
 # query_str = 'title:slovakia AND link:en.*'
+# Query index
 while True:
     query_str = input("Zadaj query: ")
     number_hits = int(input("Zadaj limit vysledkov: "))

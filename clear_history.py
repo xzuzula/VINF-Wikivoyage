@@ -1,5 +1,23 @@
 import json
 
+"""
+Updates the list of scraped URLs and their hash mappings.
+
+This code reads a JSON file containing lists of 'wikivoyage' and 'other' URLs. It converts these lists into dictionaries to remove duplicates and ensure uniqueness.
+Each URL is used as a key in the dictionary with the value set to True.
+
+After processing, it updates the original dictionary with these unique lists and their corresponding hash mappings, then writes this updated dictionary back to a different JSON file.
+
+The code updates the JSON file with the deduplicated lists of URLs and their hash mappings.
+
+File operations:
+- Reads from 'history/link_queue – kópia.json'.
+- Writes to 'history/link_queue_cl.json'.
+
+Note:
+- The purpose of this code is to clean and update the list of scraped URLs for further processing.
+"""
+
 scraped_urls = None
 
 with open("history/link_queue – kópia.json", "r", encoding="utf-8") as history_file:
