@@ -13,9 +13,9 @@ ireader = index.DirectoryReader.open(directory)
 isearcher = search.IndexSearcher(ireader)
 
 parser = queryparser.classic.QueryParser("title", analyzer)
-# query_str = 'categories:Central Europe AND link:https\:\/\/en.*'
-# query_str = 'title:slovakia AND link:https\:\/\/en.*'
-# query_str = 'title:slovakia AND link:en.*'
+# query_str = 'categories:Europe AND link:https\:\/\/en.*'  10
+# query_str = 'title:slovakia AND link:https\:\/\/en.*' Sleep 1
+# query_str = 'capital:Prague AND link:https\:\/\/en.*' title 1
 # Query index
 while True:
     query_str = input("Zadaj query: ")
