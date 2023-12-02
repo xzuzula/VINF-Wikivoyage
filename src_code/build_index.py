@@ -192,6 +192,12 @@ def insert_data(data: dict) -> None:
 	tokenized.setStored(True)
 	tokenized.setTokenized(True)
 	tokenized.setIndexOptions(index.IndexOptions.DOCS_AND_FREQS)
+
+	tokenized2 = document.FieldType()
+	tokenized2.setStored(True)
+	tokenized2.setTokenized(True)
+	tokenized2.setIndexOptions(index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
+
 	non_tokenized = document.FieldType()
 	non_tokenized.setStored(True)
 	non_tokenized.setTokenized(False)
@@ -210,7 +216,7 @@ def insert_data(data: dict) -> None:
 		elif key == "link":
 			doc.add(document.Field(key, data[key], non_tokenized))
 		elif key == "title":
-			doc.add(document.Field(key, data[key], tokenized))
+			doc.add(document.Field(key, data[key], tokenized2))
 		elif key == "other":
 			doc.add(document.Field(key, data[key], tokenized))
 		elif key == "id":
